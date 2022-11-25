@@ -1,0 +1,9 @@
+{
+    "name": "polza-import-interface",
+    "description": "Интерфейс импорта товаров из XML от 1C",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {},
+    "devDependencies": {},
+    "scripts": {}
+}
