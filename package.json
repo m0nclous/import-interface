@@ -4,6 +4,7 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
+        "element-plus": "^2.2.23",
         "vue": "^3.2.45"
     },
     "devDependencies": {
