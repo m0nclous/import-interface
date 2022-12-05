@@ -1,6 +1,15 @@
 <template>
     <el-container>
-        <el-header>Header</el-header>
+        <el-header>
+            <el-steps :active="null" finish-status="success" align-center>
+                <el-step title="Категории" description="Импорт категорий" />
+                <el-step title="Изображения" description="Импорт изображений" />
+                <el-step title="Товары" description="Импорт товаров" />
+                <el-step title="Предложения" description="Импорт вариаций" />
+                <el-step title="Оптимизация" description="Оптимизация БД" />
+            </el-steps>
+        </el-header>
+
         <el-main>Main</el-main>
 
         <el-footer>
@@ -46,6 +55,7 @@
 
     .el-header {
         --el-header-padding: 20px;
+        --el-header-height: 100%;
     }
 
     .el-footer {
