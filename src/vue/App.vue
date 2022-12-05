@@ -10,7 +10,23 @@
             </el-steps>
         </el-header>
 
-        <el-main>Main</el-main>
+        <el-main>
+            <el-row>
+                <el-col></el-col>
+
+                <el-col>
+                    <el-progress type="circle" :percentage="0">
+                        <el-button type="success" size="large" circle>
+                            <el-icon size="28">
+                                <SwitchButton />
+                            </el-icon>
+                        </el-button>
+                    </el-progress>
+                </el-col>
+
+                <el-col></el-col>
+            </el-row>
+        </el-main>
 
         <el-footer>
             <el-row>
@@ -32,6 +48,7 @@
 </template>
 
 <script setup>
+    import { SwitchButton } from '@element-plus/icons-vue';
 
 </script>
 
@@ -60,6 +77,16 @@
 
     .el-footer {
         --el-footer-padding: 20px;
+    }
+
+    .el-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .el-button--large {
+        --el-button-size: 48px;
     }
 </style>
 
