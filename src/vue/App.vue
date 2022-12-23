@@ -1,12 +1,8 @@
 <template>
     <el-container>
         <el-header>
-            <el-steps :active="2" finish-status="success" align-center>
-                <el-step title="Категории" description="Импорт категорий" />
-                <el-step title="Изображения" description="Импорт изображений" />
-                <el-step title="Товары" description="Импорт товаров" />
-                <el-step title="Предложения" description="Импорт вариаций" />
-                <el-step title="Оптимизация" description="Оптимизация БД" />
+            <el-steps :active="importInfo.step" finish-status="success" align-center>
+                <el-step v-for="step in steps" :title="step.title" :description="step.description" />
             </el-steps>
         </el-header>
 
@@ -15,16 +11,16 @@
                 <el-col :span="6" :offset="4">
                     <el-row>
                         <el-col>
-                            <el-alert title="Импорт категорий" type="success" :closable="false">
-                                <div>79 / 79 обработано</div>
-                                <el-progress :percentage="100" :show-text="false" />
+                            <el-alert title="Импорт категорий" :type="importInfo.categories.processed === importInfo.categories.total ? 'success' : importInfo.categories.processing ? 'warning' : 'info'" :closable="false">
+                                <div>{{ importInfo.categories.processed }} / {{ importInfo.categories.total }} обработано</div>
+                                <el-progress :percentage="importInfo.categories.processed / importInfo.categories.total * 100" :show-text="false" />
                             </el-alert>
                         </el-col>
 
                         <el-col>
-                            <el-alert title="Импорт изображений" type="success" :closable="false">
-                                <div>300 / 300 обработано</div>
-                                <el-progress :percentage="100" :show-text="false" />
+                            <el-alert title="Импорт изображений" :type="importInfo.images.processed === importInfo.images.total ? 'success' : importInfo.images.processing ? 'warning' : 'info'" :closable="false">
+                                <div>{{ importInfo.images.processed }} / {{ importInfo.images.total }} обработано</div>
+                                <el-progress :percentage="importInfo.images.processed / importInfo.images.total * 100" :show-text="false" />
                             </el-alert>
                         </el-col>
                     </el-row>
@@ -32,7 +28,7 @@
 
                 <el-col :span="5">
                     <el-progress type="circle" :percentage="0">
-                        <el-button type="danger" size="large" circle>
+                        <el-button @click="importInProcessing ? importStop() : importStart()" :type="importInProcessing ? 'danger' : 'success'" size="large" circle>
                             <el-icon size="28">
                                 <SwitchButton />
                             </el-icon>
@@ -43,16 +39,16 @@
                 <el-col :span="6">
                     <el-row>
                         <el-col>
-                            <el-alert title="Импорт товаров" type="process" :closable="false">
-                                <div>25 000 / 50 000 позиций</div>
-                                <el-progress :percentage="50" :show-text="false" />
+                            <el-alert title="Импорт товаров" :type="importInfo.products.processed === importInfo.products.total ? 'success' : importInfo.products.processing ? 'warning' : 'info'" :closable="false">
+                                <div>{{ importInfo.products.processed }} / {{ importInfo.products.total }} обработано</div>
+                                <el-progress :percentage="importInfo.products.processed / importInfo.products.total * 100" :show-text="false" />
                             </el-alert>
                         </el-col>
 
                         <el-col>
-                            <el-alert title="Импорт вариаций" type="info" :closable="false">
-                                <div>0 / 50 000 позиций</div>
-                                <el-progress :percentage="0" :show-text="false" />
+                            <el-alert title="Импорт вариаций" :type="importInfo.variations.processed === importInfo.variations.total ? 'success' : importInfo.variations.processing ? 'warning' : 'info'" :closable="false">
+                                <div>{{ importInfo.variations.processed }} / {{ importInfo.variations.total }} обработано</div>
+                                <el-progress :percentage="importInfo.variations.processed / importInfo.variations.total * 100" :show-text="false" />
                             </el-alert>
                         </el-col>
                     </el-row>
@@ -74,11 +70,11 @@
                 </el-col>
 
                 <el-col :span="8">
-                    <el-tag>Seed 018f6062-97c2-4be2-8edf-41beb8e0b275</el-tag>
+                    <el-tag>Seed {{ seed }}</el-tag>
                 </el-col>
 
                 <el-col :span="8">
-                    v1.0.0
+                    {{ version }}
                 </el-col>
             </el-row>
         </el-footer>
@@ -87,7 +83,74 @@
 
 <script setup>
     import { SwitchButton } from '@element-plus/icons-vue';
+    import { v4 as uuid } from 'uuid';
+    import { computed, reactive } from 'vue';
 
+    const seed = uuid();
+    const version = 'v1.0.0';
+
+    const importInfo = reactive({
+        step: null,
+
+        categories: {
+            processing: false,
+            processed: 0,
+            total: 79,
+        },
+
+        images: {
+            processing: false,
+            processed: 0,
+            total: 300,
+        },
+
+        products: {
+            processing: false,
+            processed: 0,
+            total: 50000,
+        },
+
+        variations: {
+            processing: false,
+            processed: 0,
+            total: 50000,
+        },
+    });
+
+    const steps = [
+        {
+            title: 'Категории',
+            description: 'Импорт категорий',
+        },
+        {
+            title: 'Изображения',
+            description: 'Импорт изображений',
+        },
+        {
+            title: 'Товары',
+            description: 'Импорт товаров',
+        },
+        {
+            title: 'Предложения',
+            description: 'Импорт вариаций',
+        },
+        {
+            title: 'Оптимизация',
+            description: 'Оптимизация БД',
+        },
+    ];
+
+    const importInProcessing = computed(() => importInfo.step !== null && importInfo.step === steps.length);
+
+    const importStart = () => {
+        importInfo.step = 0;
+        importInfo.categories.processing = true;
+    };
+
+    const importStop = () => {
+        importInfo.step = null;
+        importInfo.categories.processing = false;
+    };
 </script>
 
 <style scoped>
@@ -147,9 +210,13 @@
         padding: 7px 0;
     }
 
-    .el-alert--process {
+    .el-alert--warning {
         --el-alert-bg-color: var(--el-color-primary-light-9);
         background-color: var(--el-alert-bg-color);
+        color: var(--el-color-info);
+    }
+
+    .el-alert--warning:deep(.el-alert__description) {
         color: var(--el-color-info);
     }
 
